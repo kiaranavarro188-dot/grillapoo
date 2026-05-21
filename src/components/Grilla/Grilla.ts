@@ -4,6 +4,7 @@ interface ConfigGrilla {
   titulo: string;
   columnas: string[];
   textoBoton: string;
+  colorGrilla?: string; // Nuevo atributo opcional para el color de fondo de la grilla
   colorBoton?: string;
   textoBotonSecundario?: string; //columna
   colorBotonSecundario?: string; //columna
@@ -11,7 +12,9 @@ interface ConfigGrilla {
   alPresionarBotonSecundario?: () => void; // Acción opcional para segundo botón
   alEliminarFila?: (index: number) => void; // Acción opcional para eliminar fila
   alEliminarColumna?: (index: number) => void; // Acción opcional para eliminar columna
+  alEditarColumna?: (index: number, nuevoNombre: string) => void;
 }
+
 
 export class GrillaLogica {
   // ATRIBUTOS
@@ -22,12 +25,14 @@ export class GrillaLogica {
   public botonSecundario?: BotonLogica;
   private alEliminarFila?: (index: number) => void;
   private alEliminarColumna?: (index: number) => void;
+  private alEditarColumna?: (index: number, nuevoNombre: string) => void;
 
   constructor(config: ConfigGrilla) {
     this.titulo = config.titulo;
     this.columnas = config.columnas;
     this.alEliminarFila = config.alEliminarFila;
     this.alEliminarColumna = config.alEliminarColumna;
+    this.alEditarColumna = config.alEditarColumna;
 
     // La grilla fabrica su propio objeto Botón usando la clase BotonLogica
     this.botonAccion = new BotonLogica({
@@ -80,6 +85,15 @@ export class GrillaLogica {
   public agregarColumna(nombreColumna: string): void {
     this.columnas.push(nombreColumna);
     this.datos = this.datos.map(fila => [...fila, ""]);
+  }
+
+  public editarColumna(index: number, nuevoNombre: string): void {
+    if (index >= 0 && index < this.columnas.length) {
+      this.columnas[index] = nuevoNombre;
+      if (this.alEditarColumna) {
+        this.alEditarColumna(index, nuevoNombre);
+      }
+    }
   }
 
   public obtenerDatos(): string[][] {

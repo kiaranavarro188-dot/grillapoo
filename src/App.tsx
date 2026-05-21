@@ -8,8 +8,6 @@ export default function App() {
   // de la pantalla cuando nuestro objeto muta internamente.
   const [, setRefrescar] = useState(0);
 
-  // 🔥 POO ENCAPSULADA: El objeto nace y vive dentro del ciclo de vida del componente.
-  // 'useRef' garantiza que la instancia de la clase sea ÚNICA y persistente en memoria.
   const miPanelUsuarios = useRef(
     new GrillaLogica({
       titulo: "Lista de Alumnos Inscritos",
@@ -23,7 +21,7 @@ export default function App() {
         const cantidadActual = miPanelUsuarios.current.obtenerDatos().length;
         const nuevoId = (cantidadActual + 1).toString();
         
-        // LLAMADA A MÉTODO DE CLASE PURA: Modifica el atributo privado 'datos' de la instancia
+        // Modifica el atributo privado 'datos' de la instancia
         miPanelUsuarios.current.agregarFila([nuevoId, `Alumno Número ${nuevoId}`]);
         
         // Le avisamos a React que el objeto cambió para que actualice la vista
@@ -37,10 +35,11 @@ export default function App() {
       alEliminarFila: () => {
         setRefrescar(progreso => progreso + 1);
       },
-      alEliminarColumna: (_index) => {
-        setRefrescar(progreso => progreso + 1);
+     alEditarColumna: (_index, _nuevoNombre) => {    
+        setRefrescar(progreso => progreso + 1); // Fuerza a React a redibujar el nuevo nombre
       }
     })
+
   );
 
   return (
@@ -52,9 +51,7 @@ export default function App() {
       backgroundColor: '#fafafa',
       fontFamily: 'sans-serif' 
     }}>
-      {/* PASO CLAVE DE POO: Inyectamos el OBJETO INSTANCIADO (.current) 
-        como controlador único del componente visual.
-      */}
+    
       <GrillaComponente controlador={miPanelUsuarios.current} />
     </div>
   );
