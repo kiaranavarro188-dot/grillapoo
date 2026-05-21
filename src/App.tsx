@@ -14,8 +14,10 @@ export default function App() {
     new GrillaLogica({
       titulo: "Lista de Alumnos Inscritos",
       columnas: ["ID", "Nombre"],
-      textoBoton: "Inscribir Alumno",
+      textoBoton: "Agregar Fila",
       colorBoton: "purple", // Customizamos el atributo desde el constructor
+      textoBotonSecundario: "Agregar columna",
+      colorBotonSecundario: "green",
       alPresionarBoton: () => {
         // --- MÉTODO ACCIÓN DE NUESTRO OBJETO ---
         const cantidadActual = miPanelUsuarios.current.obtenerDatos().length;
@@ -25,6 +27,17 @@ export default function App() {
         miPanelUsuarios.current.agregarFila([nuevoId, `Alumno Número ${nuevoId}`]);
         
         // Le avisamos a React que el objeto cambió para que actualice la vista
+        setRefrescar(progreso => progreso + 1);
+      },
+      alPresionarBotonSecundario: () => {
+        const nuevoNombreColumna = `Columna ${miPanelUsuarios.current.columnas.length + 1}`;
+        miPanelUsuarios.current.agregarColumna(nuevoNombreColumna);
+        setRefrescar(progreso => progreso + 1);
+      },
+      alEliminarFila: () => {
+        setRefrescar(progreso => progreso + 1);
+      },
+      alEliminarColumna: (_index) => {
         setRefrescar(progreso => progreso + 1);
       }
     })

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { GrillaLogica } from './Grilla';
 import { BotonComponente } from '../Boton/Boton.tsx';
 interface GrillaProps {
@@ -6,13 +5,7 @@ interface GrillaProps {
 }
 
 export function GrillaComponente({ controlador }: GrillaProps) {
-  // Usamos un estado de React solo para forzar el redibujado en pantalla al añadir datos
-  const [filas, setFilas] = useState<string[][]>(controlador.obtenerDatos());
-
-  // Creamos un método puente para actualizar la vista de React cuando la clase cambie
-  const refrescarTabla = () => {
-    setFilas([...controlador.obtenerDatos()]);
-  };
+  const filas = controlador.obtenerDatos();
 
   return (
     <div style={{ 
@@ -31,14 +24,32 @@ export function GrillaComponente({ controlador }: GrillaProps) {
           <tr style={{ backgroundColor: '#f5f5f5', textAlign: 'left' }}>
             {/* Leemos el atributo Columnas de la Clase */}
             {controlador.columnas.map((col, index) => (
-              <th key={index} style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>{col}</th>
+              <th key={index} style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                  <span>{col}</span>
+                  <button
+                    style={{
+                      backgroundColor: '#c0392b',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '4px 8px',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => controlador.eliminarColumna(index)}
+                  >
+                    X
+                  </button>
+                </div>
+              </th>
             ))}
+            <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {filas.length === 0 ? (
             <tr>
-              <td colSpan={controlador.columnas.length} style={{ padding: '15px', textAlign: 'center', color: '#888' }}>
+              <td colSpan={controlador.columnas.length + 1} style={{ padding: '15px', textAlign: 'center', color: '#888' }}>
                 No hay registros todavía.
               </td>
             </tr>
@@ -48,6 +59,21 @@ export function GrillaComponente({ controlador }: GrillaProps) {
                 {fila.map((celda, cellIndex) => (
                   <td key={cellIndex} style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{celda}</td>
                 ))}
+                <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>
+                  <button
+                    style={{
+                      backgroundColor: '#e74c3c',
+                      color: 'white',
+                      padding: '6px 12px',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => controlador.eliminarFila(index)}
+                  >
+                    Eliminar
+                  </button>
+                </td>
               </tr>
             ))
           )}
@@ -58,7 +84,10 @@ export function GrillaComponente({ controlador }: GrillaProps) {
         PASO CLAVE: Renderizamos el componente botón de React.
         ¿Qué le pasamos por prop? El objeto botón que vive ADENTRO de la clase grilla.
       */}
-      <BotonComponente controlador={controlador.botonAccion} />
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <BotonComponente controlador={controlador.botonAccion} />
+        {controlador.botonSecundario && <BotonComponente controlador={controlador.botonSecundario} />}
+      </div>
     </div>
   );
 }
