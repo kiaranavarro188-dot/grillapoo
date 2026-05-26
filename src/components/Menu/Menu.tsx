@@ -6,7 +6,6 @@ interface MenuProps {
 }
 
 export function MenuComponente({ controlador }: MenuProps) {
-  // El mismo trigger que venimos usando para refrescar React
   const [_, setRefresh] = useState(0);
 
   const items = controlador.obtenerItems();
@@ -24,8 +23,8 @@ export function MenuComponente({ controlador }: MenuProps) {
   return (
     <div style={{
       width: '260px',
-      height: '100vh',
-      backgroundColor: '#1e1e24', // Gris oscuro premium
+      height: '100%',             // 🛠️ CAMBIO: '100%' para que use el alto de App.tsx en vez de forzar vh estático
+      backgroundColor: '#1e1e24', 
       color: '#fff',
       fontFamily: 'sans-serif',
       padding: '20px 10px',
@@ -34,9 +33,8 @@ export function MenuComponente({ controlador }: MenuProps) {
       flexDirection: 'column',
       gap: '8px',
       boxShadow: '4px 0 10px rgba(0,0,0,0.1)',
-      position: 'fixed',
-      left: 0,
-      top: 0
+      // 🛡️ ELIMINADOS: position: 'fixed', left: 0, top: 0 
+      // Al sacar esto, Flexbox toma el control y pega las tarjetas directo al borde del menú
     }}>
       {/* HEADER DEL MENÚ */}
       <div style={{ padding: '10px', marginBottom: '20px', borderBottom: '1px solid #333' }}>
@@ -90,13 +88,13 @@ export function MenuComponente({ controlador }: MenuProps) {
               )}
             </div>
 
-            {/* RENDER DE SUBMENÚS (Se muestran solo si está expandido) */}
+            {/* RENDER DE SUBMENÚS */}
             {tieneHijos && expandido && (
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '2px',
-                paddingLeft: '10px', // Desplazamiento hacia la derecha para notar la jerarquía
+                paddingLeft: '10px',
                 marginTop: '2px',
                 borderLeft: '1px solid #333',
                 marginLeft: '15px'
@@ -116,11 +114,10 @@ export function MenuComponente({ controlador }: MenuProps) {
                         backgroundColor: subActivo ? 'rgba(0,123,255,0.1)' : 'transparent',
                         fontWeight: subActivo ? 600 : 400,
                         transition: 'all 0.2s',
-                        // 🛠️ ARREGLADO POR LA IA: Atributos ordenados y separados correctamente del "key"
                         display: 'flex',
                         justifyContent: 'flex-start',
                         width: '100%',
-                        boxSizing: 'border-box' // Faltaban las comas en estas últimas líneas de CSS
+                        boxSizing: 'border-box'
                       }}
                       onMouseEnter={(e) => {
                         if (!subActivo) e.currentTarget.style.color = '#fff';

@@ -1,195 +1,196 @@
 import { useRef, useState } from 'react';
+
+// Importación de Lógica
 import { GrillaLogica } from './components/Grilla/Grilla';
-import { GrillaComponente } from './components/Grilla/Grilla.tsx';
 import { DropdownLogica } from './components/DropBox/DropBox';
-import { DropdownComponente } from './components/DropBox/DropBox.tsx';
 import { CheckboxLogica } from './components/CheckBox/CheckBox';
-import { CheckboxComponente } from './components/CheckBox/CheckBox.tsx';
 import { MenuLogica } from './components/Menu/Menu';
+
+import { GrillaComponente } from './components/Grilla/Grilla.tsx';
+import { DropdownComponente } from './components/DropBox/DropBox.tsx';
+import { CheckboxComponente } from './components/CheckBox/CheckBox.tsx';
 import { MenuComponente } from './components/Menu/Menu.tsx';
 
 import './App.css'; 
 
 export default function App() {
   const [, setRefrescar] = useState(0);
-  const miMenuLateral = useRef(
-    new MenuLogica({
-      itemsIniciales: [
-        { 
-          id: "inicio", 
-          texto: "Dashboard General", 
-          icono: "📊",
-          accion: () => console.log("Navegando al Inicio...")
-        },
-        {
-          id: "alumnos_seccion",
-          texto: "Gestión de Alumnos",
-          icono: "👥",
-          subMenus: [
-            { id: "sub_alta", texto: "Inscripciones", accion: () => console.log("Click en Inscripciones") },
-            { id: "sub_asistencia", texto: "Control Asistencia", accion: () => console.log("Click en Asistencia") },
-            { id: "sub_grilla", texto: "Panel de Datos", accion: () => console.log("Click en Ver Grilla") }
-          ]
-        },
-        {
-          id: "config_seccion",
-          texto: "Configuración",
-          icono: "⚙️",
-          subMenus: [
-            { id: "sub_perfil", texto: "Mi Perfil", accion: () => console.log("Click en Mi Perfil") },
-            { id: "sub_sistema", texto: "Ajustes del Sistema", accion: () => console.log("Click en Ajustes") }
-          ]
-        }
-      ],
-      alCambiarRuta: (idItem, idSubMenu) => {
-        console.log(`Ruta cambiada: Principal=${idItem}, Submenú=${idSubMenu || "Ninguno"}`);
-        setRefrescar(p => p + 1); // Fuerza a React a actualizar los estilos del menú
-      }
-    })
-  );
-  // --- CONTROLADOR DE LA GRILLA (Alumnos) ---
-  const miPanelUsuarios = useRef(
-    new GrillaLogica({
-      titulo: "Lista de Alumnos Inscritos",
-      columnas: ["ID", "Nombre"],
-      textoBoton: "Agregar Fila",
-      colorBoton: "purple", 
-      textoBotonSecundario: "Agregar columna",
-      colorBotonSecundario: "green",
-      alPresionarBoton: () => {
-        const cantidadActual = miPanelUsuarios.current.obtenerDatos().length;
-        const nuevoId = (cantidadActual + 1).toString();
-        
-        const nuevaFila = miPanelUsuarios.current.columnas.map((col, index) => {
-          if (index === 0) return nuevoId;
-          if (index === 1) return `Alumno Número ${nuevoId}`;
-          return `Dato ${col}`;
-        });
 
-        miPanelUsuarios.current.agregarFila(nuevaFila);
-        setRefrescar(p => p + 1);
-      },
-      alPresionarBotonSecundario: () => {
-        const nuevoNombreColumna = `Columna ${miPanelUsuarios.current.columnas.length + 1}`;
-        miPanelUsuarios.current.agregarColumna(nuevoNombreColumna);
-        setRefrescar(p => p + 1);
-      },
-      alEliminarFila: () => setRefrescar(p => p + 1),
-      alEliminarColumna: () => setRefrescar(p => p + 1),
-      alEditarColumna: () => setRefrescar(p => p + 1)
-    })
-  );
+  // --- 1. INSTANCIA DEL MENÚ (Sidebar PACID) ---
+  const miMenu = useRef(new MenuLogica({
+    itemsIniciales: [
+      { id: "dashboard", texto: "Consolidación", icono: "🏠", accion: () => setRefrescar(p => p + 1) },
+      { id: "organismo", texto: "Organismos", icono: "🏢", subMenus: [
+          { id: "sub1", texto: "Listado Oficial", accion: () => {} },
+          { id: "sub2", texto: "Configuración", accion: () => {} }
+      ]},
+      { id: "reportes", texto: "Reportes", icono: "📊" },
+      { id: "usuarios", texto: "Usuarios", icono: "👤" },
+    ],
+    alCambiarRuta: () => setRefrescar(p => p + 1)
+  }));
 
-  // --- CONTROLADOR DEL DROPDOWN (Materias) ---
-  const miDropdownMaterias = useRef(
-    new DropdownLogica({
-      tituloDefault: "Seleccionar Materia 📚",
-      opcionesIniciales: [
-        { id: "1", texto: "Probabilidad y Estadística" },
-        { id: "2", texto: "Programación .NET" },
-        { id: "3", texto: "Arquitectura de Software" }
-      ],
-      alCambiarSeleccion: () => setRefrescar(p => p + 1),
-      alCambiarEstadoMenu: () => setRefrescar(p => p + 1)
-    })
-  );
+  // --- 2. INSTANCIA DE LA GRILLA (Listado Principal) ---
+  const miGrilla = useRef(new GrillaLogica({
+    titulo: "Listado de Registros",
+    columnas: ["ID", "Fecha", "Organismo", "Estado", "Acciones"],
+    textoBoton: "Nuevo Registro +",
+    colorBoton: "#2b4c7e", 
+    alPresionarBoton: () => {
+      miGrilla.current.agregarFila(["102", "26/05/2026", "Organismo Nuevo", "Pendiente", "---"]);
+      setRefrescar(p => p + 1);
+    }
+  }));
 
-  // 🆕 AGREGADO: INSTANCIA 1 DEL CHECKBOX (Términos)
-  // Arranca desmarcado por defecto (false)
-  const checkTerminos = useRef(
-    new CheckboxLogica({
-      label: "Acepto los términos de matriculación",
-      valorInicial: false,
-      alCambiarEstado: (marcado) => {
-        console.log("Check Términos cambió a:", marcado);
-        setRefrescar(p => p + 1); // Gatilla el re-render para actualizar la pantalla
-      }
-    })
-  );
+  // --- 3. INSTANCIA DE FILTROS (Dropdown y Checkboxes) ---
+  const filtroOrganismo = useRef(new DropdownLogica({
+    tituloDefault: "Todos los Organismos",
+    opcionesIniciales: [
+      { id: "1", texto: "Ministerio de Educación" },
+      { id: "2", texto: "Seguridad Social" }
+    ],
+    alCambiarSeleccion: () => setRefrescar(p => p + 1)
+  }));
 
-  // 🆕 AGREGADO: INSTANCIA 2 DEL CHECKBOX (Trabaja)
-  // Reutilizamos la misma clase pero con configuración distinta: arranca marcado (true)
-  const checkTrabaja = useRef(
-    new CheckboxLogica({
-      label: "El alumno trabaja actualmente",
-      valorInicial: true,
-      alCambiarEstado: (marcado) => {
-        console.log("Check Trabaja cambió a:", marcado);
-        setRefrescar(p => p + 1);
-      }
-    })
-  );
+  const checkSoloActivos = useRef(new CheckboxLogica({ 
+    label: "Ver solo activos", 
+    valorInicial: true, 
+    alCambiarEstado: () => setRefrescar(p => p + 1) 
+  }));
 
-  // 🧠 MODIFICACIÓN EXPLICADA: Cambiamos la estructura del contenedor padre a 'flex' horizontal (fila).
-  // Esto nos permite encastrar el Menú a la izquierda y el resto de las cosas a la derecha sin que se pisen.
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#fafafa' }}>
+    <div style={{ 
+      display: 'flex', 
+      height: '100vh', 
+      width: '100%',          // Al usar 100% evitamos desbordes con las barras de scroll nativas
+      backgroundColor: '#f0f2f5', 
+      fontFamily: '"Inter", "Segoe UI", sans-serif',
+      overflow: 'hidden',     // Bloqueo total de scrolls globales raros
+      margin: 0,
+      padding: 0,
+      boxSizing: 'border-box'
+    }}>
       
-      {/* 🆕 INYECCIÓN DEL COMPONENTE MENÚ PRINCIPAL */}
-      {/* Agregado por la IA: Renderizamos el componente visual pasándole la instancia de control de POO */}
-      <MenuComponente controlador={miMenuLateral.current} />
+      {/* --- BARRA LATERAL (MENU) --- */}
+      {/* Ya no necesita trucos raros, recibe el menú que se banca su propio espacio */}
+      <MenuComponente controlador={miMenu.current} />
 
-      {/* 🆕 CONTENEDOR DE CONTENIDO PRINCIPAL (DERECHO) */}
-      {/* Agregado por la IA: Agrupamos el Layout viejo en este div y le metemos 'marginLeft: 260px' 
-          para que coincida exactamente con el ancho del Sidebar y no quede solapado por debajo. */}
-      <div style={{
-        marginLeft: '260px',
-        flexGrow: 1,
-        padding: '40px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '30px',
-        alignItems: 'center',
+      {/* --- CONTENIDO PRINCIPAL --- */}
+      <div style={{ 
+        flexGrow: 1, 
+        display: 'flex', 
+        flexDirection: 'column', 
+        height: '100vh',
+        overflow: 'hidden',   // El contenedor intermedio se queda quieto
         boxSizing: 'border-box'
       }}>
         
-        {/* PANEL SUPERIOR: Dropdown + Checkboxes */}
-        <div style={{ 
+        {/* CABECERA (HEADER) */}
+        <header style={{
+          height: '60px',
+          backgroundColor: '#fff',
           display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 24px',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+          zIndex: 10,
+          flexShrink: 0
+        }}>
+          <span style={{ color: '#2b4c7e', fontWeight: 700, fontSize: '18px' }}>
+            CONSOLIDACIÓN POR ORGANISMO
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+             <span style={{ fontSize: '13px', color: '#666' }}>Admin Usuario</span>
+             <div style={{ width: '35px', height: '35px', borderRadius: '50%', backgroundColor: '#2b4c7e', color: '#fff', display: 'grid', placeItems: 'center' }}>A</div>
+          </div>
+        </header>
+
+        {/* CUERPO DEL DASHBOARD (El espacio gris de fondo) */}
+        <main style={{ 
+          padding: '24px 24px 24px 12px', // Margen izquierdo chico para que quede pegado al menú oscuro
+          display: 'flex', 
+          flexDirection: 'column', 
           gap: '20px',
-          alignItems: 'stretch',
-          width: '700px',
-          maxWidth: '100%'
+          flexGrow: 1,
+          overflowY: 'auto',              // Si el contenido es largo, el scroll vertical aparece SOLO acá adentro
+          boxSizing: 'border-box',
+          width: '100%'
         }}>
           
-          {/* Tarjeta del Dropdown */}
-          <div style={{ 
-            backgroundColor: '#fff', padding: '20px', borderRadius: '12px', 
-            border: '1px solid #ddd', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', flex: 1 
+          {/* TARJETA DE FILTROS */}
+          <section style={{
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            padding: '20px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+            border: '1px solid #e1e4e8',
+            width: '100%',
+            boxSizing: 'border-box'
           }}>
-            <h4 style={{ marginTop: 0, marginBottom: '15px', color: '#444' }}>Asignación de Cursada</h4>
-            <DropdownComponente controlador={miDropdownMaterias.current} ancho="100%" />
-            <p style={{ fontSize: '13px', color: '#666', marginTop: '15px', marginBottom: 0 }}>
-              <b>Materia activa:</b> {miDropdownMaterias.current.obtenerSeleccionada()?.texto || "Ninguna"}
-            </p>
-          </div>
-
-          {/* 🆕 AGREGADO: Tarjeta de Checkboxes independientes */}
-          <div style={{ 
-            backgroundColor: '#fff', padding: '20px', borderRadius: '12px', 
-            border: '1px solid #ddd', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', flex: 1,
-            display: 'flex', flexDirection: 'column', justifyContent: 'center'
-          }}>
-            <h4 style={{ marginTop: 0, marginBottom: '15px', color: '#444' }}>Condiciones del Alumno</h4>
-            
-            {/* Renderizamos el primer Checkbox */}
-            <CheckboxComponente controlador={checkTerminos.current} />
-            
-            {/* Renderizamos el segundo Checkbox */}
-            <CheckboxComponente controlador={checkTrabaja.current} />
-
-            {/* Bloque para validar que la lógica guarda bien los estados individuales */}
-            <div style={{ marginTop: '15px', fontSize: '11px', color: '#888', borderTop: '1px solid #eee', paddingTop: '10px' }}>
-              <div><b>Estado Términos:</b> {checkTerminos.current.seleccionado() ? "🟢 Aceptado" : "🔴 No aceptado"}</div>
-              <div><b>Estado Trabaja:</b> {checkTrabaja.current.seleccionado() ? "🟢 Sí" : "🔴 No"}</div>
+            <div style={{ marginBottom: '15px', color: '#2b4c7e', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span>🔍 Filtros de Búsqueda</span>
             </div>
-          </div>
+            
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '20px', flexWrap: 'wrap' }}>
+              <div style={{ width: '300px' }}>
+                <label style={{ fontSize: '12px', color: '#666', marginBottom: '5px', display: 'block' }}>Seleccionar Organismo</label>
+                <DropdownComponente controlador={filtroOrganismo.current} ancho="100%" />
+              </div>
+              
+              <div style={{ paddingBottom: '10px' }}>
+                <CheckboxComponente controlador={checkSoloActivos.current} />
+              </div>
 
-        </div>
+              <button style={{
+                backgroundColor: '#2b4c7e',
+                color: '#fff',
+                border: 'none',
+                padding: '10px 25px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                height: '42px'
+              }}>
+                Buscar
+              </button>
+            </div>
+          </section>
 
-        {/* Grilla de Alumnos */}
-        <GrillaComponente controlador={miPanelUsuarios.current} />
-        
+          {/* TARJETA DE LISTADO (GRILLA) */}
+          <section style={{
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            padding: '20px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+            border: '1px solid #e1e4e8',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ margin: 0, color: '#333', fontSize: '18px' }}>Listado General</h3>
+              <span style={{ fontSize: '12px', color: '#999' }}>Mostrando {miGrilla.current.obtenerDatos().length} resultados</span>
+            </div>
+
+            {/* ENCAPSULADOR DE SEGURIDAD PARA LA GRILLA */}
+            <div style={{ 
+              width: '100%', 
+              overflowX: 'auto', // Scroll horizontal interno exclusivo para las columnas de la tabla
+              backgroundColor: '#fafafa',
+              borderRadius: '4px',
+              boxSizing: 'border-box'
+            }}>
+              <GrillaComponente controlador={miGrilla.current} />
+            </div>
+          </section>
+
+        </main>
+
+        {/* FOOTER */}
+        <footer style={{ padding: '15px 24px', fontSize: '12px', color: '#999', textAlign: 'center', backgroundColor: '#fff', borderTop: '1px solid #e1e4e8', flexShrink: 0 }}>
+          © 2026 PACID - Sistema de Gestión de Organismos
+        </footer>
+
       </div>
     </div>
   );
