@@ -24,7 +24,7 @@ export function MenuComponente({ controlador }: MenuProps) {
     <div style={{
       width: '260px',
       height: '100%',             // 🛠️ CAMBIO: '100%' para que use el alto de App.tsx en vez de forzar vh estático
-      backgroundColor: '#1e1e24', 
+       background: 'linear-gradient(180deg, #0b2c5d 0%, #1e40af 50%, #2563eb 100%)', 
       color: '#fff',
       fontFamily: 'sans-serif',
       padding: '20px 10px',
