@@ -41,6 +41,18 @@ export default function App() {
       setRefrescar(p => p + 1);
     }
   }));
+   
+    const miGrillaNueva = useRef(new GrillaLogica({
+    titulo: "Listado de Registros nueva ",
+    columnas: ["ID", "Fecha", "Organismo", "Estado", "Acciones"],
+    textoBoton: "Nuevo Registro +",
+    colorBoton: "#530744", 
+    alPresionarBoton: () => {
+      miGrillaNueva.current.agregarFila(["102", "26/05/2026", "Organismo Nuevo", "Pendiente", "---"]);
+      setRefrescar(p => p + 1);
+    }
+  }));
+
 
   // --- 3. INSTANCIA DE FILTROS (Dropdown y Checkboxes) ---
   const filtroOrganismo = useRef(new DropdownLogica({
@@ -181,6 +193,7 @@ export default function App() {
               boxSizing: 'border-box'
             }}>
               <GrillaComponente controlador={miGrilla.current} />
+                <GrillaComponente controlador={miGrillaNueva.current} />
             </div>
           </section>
 

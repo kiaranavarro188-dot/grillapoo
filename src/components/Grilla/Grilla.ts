@@ -96,6 +96,14 @@ export class GrillaLogica {
     }
   }
 
+
+  public editarFila(indice: number, nuevosDatos: string[]): void {
+  if (indice >= 0 && indice < this.datos.length) {
+    // reemplaza los datos de la fila por los nuevos
+    this.datos[indice] = nuevosDatos;
+  }
+}
+
   public obtenerDatos(): string[][] {
     return this.datos;
   }

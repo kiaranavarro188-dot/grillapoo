@@ -35,6 +35,27 @@ export function GrillaComponente({ controlador }: GrillaProps) {
       setRefresh(prev => prev + 1); // Dispara el re-render para ver el cambio de nombre
     }
   };
+  
+  // NUEVA FUNCIÓN: Edita los datos de una fila completa
+const manejarEditarFila = (index: number) => {
+  const filaActual = controlador.obtenerDatos()[index];
+  const nuevaFila: string[] = [];
+  
+  // recorre cada columna y pregunta por el nuevo valor
+  for (let i = 0; i < controlador.columnas.length; i++) {
+    const valorActual = filaActual[i] || "";
+    const nuevoValor = prompt(`Editar "${controlador.columnas[i]}":`, valorActual);
+    
+    // si cancela cualquier campo, se cancela toda la edicion
+    if (nuevoValor === null) return;
+    
+    nuevaFila.push(nuevoValor);
+  }
+  
+  controlador.editarFila(index, nuevaFila);
+  setRefresh(prev => prev + 1);
+};
+
 
   return (
     <div style={{ 
@@ -69,7 +90,7 @@ export function GrillaComponente({ controlador }: GrillaProps) {
                       {/* BOTÓN NUEVO DE EDITAR COLUMNA */}
                       <button
                         style={{
-                          backgroundColor: '#f39c12', // Color naranja
+                          backgroundColor: '#4695d6', // Color azul
                           color: 'white',
                           border: 'none',
                           borderRadius: '4px',
@@ -122,20 +143,35 @@ export function GrillaComponente({ controlador }: GrillaProps) {
                     </td>
                   ))}
                   <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>
-                    <button
-                      style={{
-                        backgroundColor: '#e74c3c',
-                        color: 'white',
-                        padding: '6px 12px',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                      }}
-                      onClick={() => manejarEliminarFila(index)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
+  <div style={{ display: 'flex', gap: '6px' }}>
+    <button
+      style={{
+        backgroundColor: '#4695d6',
+        color: 'white',
+        padding: '6px 12px',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer'
+      }}
+      onClick={() => manejarEditarFila(index)}
+    >
+      Modificar
+    </button>
+    <button
+      style={{
+        backgroundColor: '#e74c3c',
+        color: 'white',
+        padding: '6px 12px',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer'
+      }}
+      onClick={() => manejarEliminarFila(index)}
+    >
+      Eliminar
+    </button>
+  </div>
+</td>
                 </tr>
               ))
             )}
