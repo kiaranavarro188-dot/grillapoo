@@ -5,13 +5,13 @@ import { GrillaLogica } from './components/Grilla/Grilla';
 import { DropdownLogica } from './components/DropBox/DropBox';
 import { CheckboxLogica } from './components/CheckBox/CheckBox';
 import { MenuLogica } from './components/Menu/Menu';
-import { InputLogica } from './components/Input'; 
+import { InputLogica } from './components/Input/Input'; 
 
 import { GrillaComponente } from './components/Grilla/Grilla.tsx';
 import { DropdownComponente } from './components/DropBox/DropBox.tsx';
 import { CheckboxComponente } from './components/CheckBox/CheckBox.tsx';
 import { MenuComponente } from './components/Menu/Menu.tsx';
-import { InputComponente } from './components/Input.tsx'; 
+import { InputComponente } from './components/Input/Input.tsx'; 
 
 import './App.css'; 
 
@@ -37,29 +37,6 @@ export default function App() {
       { id: "usuarios", texto: "Usuarios", },
     ],
     alCambiarRuta: () => setRefrescar(p => p + 1)
-  }));
-
-  // --- 2. INSTANCIA DE LA GRILLA (Listado Principal) ---
-  const miGrilla = useRef(new GrillaLogica({
-    titulo: "Listado de Registros",
-    columnas: ["ID", "Fecha", "Organismo", "Estado", "Acciones"],
-    textoBoton: "Nuevo Registro +",
-    colorBoton: "#000c7c", 
-    alPresionarBoton: () => {
-      miGrilla.current.agregarFila(["102", "26/05/2026", "Organismo Nuevo", "Pendiente", "---"]);
-      setRefrescar(p => p + 1);
-    }
-  }));
-   
-    const miGrillaNueva = useRef(new GrillaLogica({
-    titulo: "Listado de Registros nueva ",
-    columnas: ["ID", "Fecha", "Organismo", "Estado", "Acciones"],
-    textoBoton: "Nuevo Registro +",
-    colorBoton: "#001885", 
-    alPresionarBoton: () => {
-      miGrillaNueva.current.agregarFila(["102", "26/05/2026", "Organismo Nuevo", "Pendiente", "---"]);
-      setRefrescar(p => p + 1);
-    }
   }));
 
 
@@ -262,7 +239,6 @@ export default function App() {
             padding: '20px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
             border: '1px solid #e1e4e8',
-            overflowX: 'auto',
             display: 'flex',
             flexDirection: 'column',
             gap: '25px'

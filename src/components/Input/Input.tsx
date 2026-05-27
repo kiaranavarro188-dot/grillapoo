@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { InputLogica } from './Input';
 
+
 interface InputProps {
   controlador: InputLogica;
   ancho?: string;
