@@ -2,9 +2,7 @@ html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100vh;
-  max-width: 100% !important; /* Rompe cualquier bloqueo de Vite */
-  overflow: hidden;
+  min-height: 100vh;
   background-color: #f0f2f5;
   box-sizing: border-box;
 }

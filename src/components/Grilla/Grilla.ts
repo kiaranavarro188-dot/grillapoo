@@ -1,6 +1,6 @@
-import { BotonLogica } from '../Boton/Boton';
+import { BotonLogica } from "../Boton/Boton";
 
-interface ConfigGrilla {
+export interface GrillaConfig {
   titulo: string;
   columnas: string[];
   textoBoton: string;
@@ -17,7 +17,6 @@ interface ConfigGrilla {
 
 
 export class GrillaLogica {
-  // ATRIBUTOS
   public titulo: string;
   public columnas: string[];
   private datos: string[][] = []; // Empieza vacía
@@ -27,7 +26,7 @@ export class GrillaLogica {
   private alEliminarColumna?: (index: number) => void;
   private alEditarColumna?: (index: number, nuevoNombre: string) => void;
 
-  constructor(config: ConfigGrilla) {
+  constructor(config: GrillaConfig) {
     this.titulo = config.titulo;
     this.columnas = config.columnas;
     this.alEliminarFila = config.alEliminarFila;
@@ -106,5 +105,15 @@ export class GrillaLogica {
 
   public obtenerDatos(): string[][] {
     return this.datos;
+  }
+
+  public agregarcolumnas(nuevoNombre: string): void {
+    this.columnas.push(nuevoNombre);
+    this.datos = this.datos.map(fila => [...fila, "-"]);
+  }
+
+  // MÉTODO CORREGIDO: Vacío de parámetros para que no tire error al llamarlo
+  public borrarfila(): void {
+    this.datos.pop();
   }
 }

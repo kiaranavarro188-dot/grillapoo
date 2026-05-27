@@ -60,7 +60,7 @@ const manejarEditarFila = (index: number) => {
   return (
     <div style={{ 
       fontFamily: 'Arial, sans-serif', 
-      border: '1px solid #ddd', 
+      border: '1px solid #f5f5f5', 
       padding: '20px', 
       borderRadius: '8px',
       maxWidth: '90%', // Permite que la tarjeta crezca si hay muchas columnas
@@ -69,7 +69,6 @@ const manejarEditarFila = (index: number) => {
       boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
       backgroundColor: '#fff'
     }}>
-      {/* Atributo Título de la Clase */}
       <h2 style={{ color: '#333', marginTop: 0 }}>{controlador.titulo}</h2>
       
       {/* Contenedor con scroll horizontal por si la tabla se estira demasiado */}

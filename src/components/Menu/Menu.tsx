@@ -23,8 +23,8 @@ export function MenuComponente({ controlador }: MenuProps) {
   return (
     <div style={{
       width: '260px',
-      height: '100%', 
-      background: 'linear-gradient(180deg, #0b2c5d 0%, #1e40af 50%, #012e8f 100%)', 
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #0b2c5d 0%, #1e40af 50%, #2563eb 100%)',
       color: '#fff',
       fontFamily: 'sans-serif',
       padding: '20px 10px',
@@ -33,10 +33,15 @@ export function MenuComponente({ controlador }: MenuProps) {
       flexDirection: 'column',
       gap: '8px',
       boxShadow: '4px 0 10px rgba(0,0,0,0.1)',
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      bottom: 0,
+      overflowY: 'auto'
     }}>
       {/* HEADER DEL MENÚ */}
-      <div style={{ padding: '10px', marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-        <h3 style={{ margin: 0, fontSize: '18px', color: '#fff', fontWeight: 700, letterSpacing: '1px' }}>SISTEMA</h3>
+      <div style={{ padding: '10px', marginBottom: '20px', borderBottom: '1px solid #333' }}>
+        <h3 style={{ margin: 0, fontSize: '18px', color: '#007bff', letterSpacing: '1px' }}>SISTEMA</h3>
       </div>
 
       {/* RENDER DE ÍTEMS */}
@@ -58,12 +63,11 @@ export function MenuComponente({ controlador }: MenuProps) {
                 padding: '12px 15px',
                 borderRadius: '8px',
                 cursor: 'pointer',
-                // Si está activo y no tiene hijos (es botón directo), se pinta azul brillante
                 backgroundColor: esActivo && !tieneHijos ? '#007bff' : 'transparent',
                 transition: 'background 0.2s',
               }}
               onMouseEnter={(e) => {
-                if (!esActivo || tieneHijos) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                if (!esActivo || tieneHijos) e.currentTarget.style.backgroundColor = '#2a2a35';
               }}
               onMouseLeave={(e) => {
                 if (!esActivo || tieneHijos) e.currentTarget.style.backgroundColor = 'transparent';
@@ -80,7 +84,7 @@ export function MenuComponente({ controlador }: MenuProps) {
                   fontSize: '10px', 
                   transform: expandido ? 'rotate(180deg)' : 'rotate(0deg)',
                   transition: 'transform 0.2s',
-                  color: '#fff'
+                  color: '#aaa'
                 }}>
                   ▼
                 </span>
@@ -92,10 +96,10 @@ export function MenuComponente({ controlador }: MenuProps) {
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '4px',
+                gap: '2px',
                 paddingLeft: '10px',
                 marginTop: '2px',
-                borderLeft: '1px solid rgba(255,255,255,0.2)',
+                borderLeft: '1px solid #333',
                 marginLeft: '15px'
               }}>
                 {item.subMenus!.map((sub) => {
@@ -109,10 +113,8 @@ export function MenuComponente({ controlador }: MenuProps) {
                         borderRadius: '6px',
                         cursor: 'pointer',
                         fontSize: '13px',
-                        // 🛠️ FIX CONTRASTE: Texto blanco cuando está activo, gris claro si no
-                        color: subActivo ? '#fff' : '#cbd5e1',
-                        // 🛠️ FIX CONTRASTE: Fondo azul nítido si está activo
-                        backgroundColor: subActivo ? '#007bff' : 'transparent',
+                        color: subActivo ? '#007bff' : '#aaa',
+                        backgroundColor: subActivo ? 'rgba(0,123,255,0.1)' : 'transparent',
                         fontWeight: subActivo ? 600 : 400,
                         transition: 'all 0.2s',
                         display: 'flex',
@@ -121,16 +123,10 @@ export function MenuComponente({ controlador }: MenuProps) {
                         boxSizing: 'border-box'
                       }}
                       onMouseEnter={(e) => {
-                        if (!subActivo) {
-                          e.currentTarget.style.color = '#fff';
-                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-                        }
+                        if (!subActivo) e.currentTarget.style.color = '#fff';
                       }}
                       onMouseLeave={(e) => {
-                        if (!subActivo) {
-                          e.currentTarget.style.color = '#cbd5e1';
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                        }
+                        if (!subActivo) e.currentTarget.style.color = '#aaa';
                       }}
                     >
                       {sub.texto}
