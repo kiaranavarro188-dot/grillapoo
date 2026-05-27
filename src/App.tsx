@@ -16,16 +16,20 @@ import './App.css';
 export default function App() {
   const [, setRefrescar] = useState(0);
 
-  // --- 1. INSTANCIA DEL MENÚ (Sidebar PACID) ---
+  // --- 1. INSTANCIA DEL MENÚ 
   const miMenu = useRef(new MenuLogica({
     itemsIniciales: [
-      { id: "dashboard", texto: "Consolidación", icono: "🏠", accion: () => setRefrescar(p => p + 1) },
-      { id: "organismo", texto: "Organismos", icono: "🏢", subMenus: [
-          { id: "sub1", texto: "Listado Oficial", accion: () => {} },
-          { id: "sub2", texto: "Configuración", accion: () => {} }
+      { id: "dashboard", texto: "Consolidación", accion: () => setRefrescar(p => p + 1) },
+      { id: "organismo", texto: "Organismos", subMenus: [
+          { id: "org-lista", texto: "Listado Oficial", accion: () => {} },
+          { id: "org-config", texto: "Configuración", accion: () => {} }
       ]},
-      { id: "reportes", texto: "Reportes", icono: "📊" },
-      { id: "usuarios", texto: "Usuarios", icono: "👤" },
+      { id: "reportes", texto: "Reportes", subMenus: [
+          { id: "rep-lista", texto: "Lista", accion: () => {} },
+          { id: "rep-modelos", texto: "Modelos", accion: () => {} }
+      ]},
+      
+      { id: "usuarios", texto: "Usuarios", },
     ],
     alCambiarRuta: () => setRefrescar(p => p + 1)
   }));
@@ -35,7 +39,7 @@ export default function App() {
     titulo: "Listado de Registros",
     columnas: ["ID", "Fecha", "Organismo", "Estado", "Acciones"],
     textoBoton: "Nuevo Registro +",
-    colorBoton: "#2b4c7e", 
+    colorBoton: "#000c7c", 
     alPresionarBoton: () => {
       miGrilla.current.agregarFila(["102", "26/05/2026", "Organismo Nuevo", "Pendiente", "---"]);
       setRefrescar(p => p + 1);
@@ -46,7 +50,7 @@ export default function App() {
     titulo: "Listado de Registros nueva ",
     columnas: ["ID", "Fecha", "Organismo", "Estado", "Acciones"],
     textoBoton: "Nuevo Registro +",
-    colorBoton: "#530744", 
+    colorBoton: "#001885", 
     alPresionarBoton: () => {
       miGrillaNueva.current.agregarFila(["102", "26/05/2026", "Organismo Nuevo", "Pendiente", "---"]);
       setRefrescar(p => p + 1);
@@ -59,7 +63,10 @@ export default function App() {
     tituloDefault: "Todos los Organismos",
     opcionesIniciales: [
       { id: "1", texto: "Ministerio de Educación" },
-      { id: "2", texto: "Seguridad Social" }
+      { id: "2", texto: "Seguridad Social" },
+      { id: "3", texto: "Secretaría de Seguridad" },
+      { id: "4", texto: "Salud Pública" },
+      { id: "5", texto: "Transporte" },
     ],
     alCambiarSeleccion: () => setRefrescar(p => p + 1)
   }));
@@ -109,7 +116,7 @@ export default function App() {
           zIndex: 10,
           flexShrink: 0
         }}>
-          <span style={{ color: '#2b4c7e', fontWeight: 700, fontSize: '18px' }}>
+          <span style={{ color: '#001535', fontWeight: 700, fontSize: '18px' }}>
             CONSOLIDACIÓN POR ORGANISMO
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
