@@ -5,17 +5,22 @@ import { GrillaLogica } from './components/Grilla/Grilla';
 import { DropdownLogica } from './components/DropBox/DropBox';
 import { CheckboxLogica } from './components/CheckBox/CheckBox';
 import { MenuLogica } from './components/Menu/Menu';
+import { InputLogica } from './components/Input'; 
 
 // Importación de Componentes Visuales
 import { GrillaComponente } from './components/Grilla/Grilla.tsx';
 import { DropdownComponente } from './components/DropBox/DropBox.tsx';
 import { CheckboxComponente } from './components/CheckBox/CheckBox.tsx';
 import { MenuComponente } from './components/Menu/Menu.tsx';
+import { InputComponente } from './components/Input.tsx'; 
 
 import './App.css';
 
 export default function App() {
   const [, setRefrescar] = useState(0);
+
+  // 👈 TODO DESDE APP: Estado para saber qué texto escribió el usuario y queremos buscar
+  const [textoFiltro, setTextoFiltro] = useState("");
 
   // --- MENÚ LATERAL ---
   const miMenu = useRef(new MenuLogica({
@@ -39,6 +44,11 @@ export default function App() {
       { id: "2", texto: "Seguridad Social" }
     ],
     alCambiarSeleccion: () => setRefrescar(p => p + 1)
+  }));
+
+  const buscadorTexto = useRef(new InputLogica({
+    placeholder: "Buscar por ID u Organismo...",
+    alCambiarTexto: () => setRefrescar(p => p + 1)
   }));
 
   const checkSoloActivos = useRef(new CheckboxLogica({
@@ -90,6 +100,21 @@ export default function App() {
     alEliminarColumna: () => setRefrescar(p => p + 1),
     alEditarColumna: () => setRefrescar(p => p + 1)
   }));
+
+  // 👈 TODO DESDE APP: Al tocar Buscar, simplemente guardamos el texto plano en el estado
+  const manejarBusqueda = () => {
+    const valorDelInput = buscadorTexto.current.obtenerValor();
+    setTextoFiltro(valorDelInput.trim().toLowerCase());
+  };
+
+  // 👈 TODO DESDE APP: Función auxiliar que filtra las filas sin romper los objetos de las grillas originales
+  const obtenerFilasFiltradas = (controladorGrilla: GrillaLogica) => {
+    const todasLasFilas = controladorGrilla.obtenerDatos();
+    if (!textoFiltro) return todasLasFilas;
+    return todasLasFilas.filter((fila: string[]) => 
+      fila.some(celda => String(celda).toLowerCase().includes(textoFiltro))
+    );
+  };
 
   return (
     <div style={{
@@ -180,58 +205,75 @@ export default function App() {
                 <DropdownComponente controlador={filtroOrganismo.current} ancho="100%" />
               </div>
 
+              <div style={{ width: '250px' }}>
+                <label style={{ fontSize: '12px', color: '#666', marginBottom: '5px', display: 'block' }}>
+                  Filtrar por texto
+                </label>
+                <InputComponente controlador={buscadorTexto.current} ancho="100%" />
+              </div>
+
               <div style={{ paddingBottom: '10px' }}>
                 <CheckboxComponente controlador={checkSoloActivos.current} />
               </div>
 
-              <button style={{
-                backgroundColor: '#2b4c7e',
-                color: '#fff',
-                border: 'none',
-                padding: '10px 25px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontWeight: 600,
-                height: '42px'
-              }}>
+              <button 
+                onClick={manejarBusqueda} 
+                style={{
+                  backgroundColor: '#2b4c7e',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 25px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  height: '42px'
+                }}
+              >
                 Buscar
               </button>
             </div>
           </section>
 
-          {/* TARJETA GRILLA 1 */}
+          {/* TARJETA GRILLAS */}
           <section style={{
             backgroundColor: '#fff',
             borderRadius: '8px',
             padding: '20px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
             border: '1px solid #e1e4e8',
-            overflowX: 'auto'
+            overflowX: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '25px'
           }}>
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '20px'
+              marginBottom: '10px'
             }}>
               <h3 style={{ margin: 0, color: '#333', fontSize: '18px' }}>Listado General</h3>
               <span style={{ fontSize: '12px', color: '#999' }}>
-                Mostrando {miGrilla.current.obtenerDatos().length} resultados
+                Mostrando {obtenerFilasFiltradas(miGrilla.current).length} resultados
               </span>
             </div>
-            <GrillaComponente controlador={miGrilla.current} />
-          </section>
 
-          {/* TARJETA GRILLA 2 */}
-          <section style={{
-            backgroundColor: '#fff',
-            borderRadius: '8px',
-            padding: '20px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-            border: '1px solid #e1e4e8',
-            overflowX: 'auto'
-          }}>
-            <GrillaComponente controlador={miGrillaNueva.current} />
+            {/* 👈 TRUCO DE ORO DESDE APP: 
+              En vez de pasar un objeto inventado, usamos un proxy rápido de JS con un "getter" modificado.
+              De esta manera, la grilla cree que recibe su controlador POO puro, pero cuando llama a `.obtenerDatos()`,
+              le devolvemos la lista filtrada que calculamos acá arriba en App.tsx. ¡Y las columnas no se mueven jamás!
+            */}
+            <GrillaComponente 
+              controlador={Object.create(miGrilla.current, {
+                obtenerDatos: { value: () => obtenerFilasFiltradas(miGrilla.current) }
+              })} 
+            />
+
+            <GrillaComponente 
+              controlador={Object.create(miGrillaNueva.current, {
+                obtenerDatos: { value: () => obtenerFilasFiltradas(miGrillaNueva.current) }
+              })} 
+            />
           </section>
 
         </main>
