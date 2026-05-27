@@ -23,8 +23,8 @@ export function MenuComponente({ controlador }: MenuProps) {
   return (
     <div style={{
       width: '260px',
-      height: '100%',             // 🛠️ CAMBIO: '100%' para que use el alto de App.tsx en vez de forzar vh estático
-       background: 'linear-gradient(180deg, #0b2c5d 0%, #1e40af 50%, #2563eb 100%)', 
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #0b2c5d 0%, #1e40af 50%, #2563eb 100%)',
       color: '#fff',
       fontFamily: 'sans-serif',
       padding: '20px 10px',
@@ -33,8 +33,11 @@ export function MenuComponente({ controlador }: MenuProps) {
       flexDirection: 'column',
       gap: '8px',
       boxShadow: '4px 0 10px rgba(0,0,0,0.1)',
-      // 🛡️ ELIMINADOS: position: 'fixed', left: 0, top: 0 
-      // Al sacar esto, Flexbox toma el control y pega las tarjetas directo al borde del menú
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      bottom: 0,
+      overflowY: 'auto'
     }}>
       {/* HEADER DEL MENÚ */}
       <div style={{ padding: '10px', marginBottom: '20px', borderBottom: '1px solid #333' }}>
