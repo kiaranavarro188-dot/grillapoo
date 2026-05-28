@@ -6,13 +6,19 @@ export interface GrillaConfig {
   textoBoton: string;
   colorGrilla?: string; // Nuevo atributo opcional para el color de fondo de la grilla
   colorBoton?: string;
+  colorTextoBoton?: string;
   textoBotonSecundario?: string; //columna
   colorBotonSecundario?: string; //columna
+  colorTextoBotonSecundario?: string;
+  textoBotonFuente?: string;
+  colorBotonFuente?: string;
+  colorTextoBotonFuente?: string;
   alPresionarBoton: () => void; // El método que resolverá la acción principal
   alPresionarBotonSecundario?: () => void; // Acción opcional para segundo botón
   alEliminarFila?: (index: number) => void; // Acción opcional para eliminar fila
   alEliminarColumna?: (index: number) => void; // Acción opcional para eliminar columna
   alEditarColumna?: (index: number, nuevoNombre: string) => void;
+  alCambiarFuente?: () => void;
 }
 
 
@@ -22,9 +28,14 @@ export class GrillaLogica {
   private datos: string[][] = []; // Empieza vacía
   public botonAccion: BotonLogica; // COMPOSICIÓN: Atributo que guarda OTRA clase
   public botonSecundario?: BotonLogica;
+  public botonFuente?: BotonLogica;
+  public fuenteActual: string = "Arial, sans-serif";
+  private fuentesDisponibles: string[] = ["Arial, sans-serif", "Roboto", "Lobster", "Playfair Display", "Montserrat", "Pacifico"];
+  private indiceFuenteActual: number = 0;
   private alEliminarFila?: (index: number) => void;
   private alEliminarColumna?: (index: number) => void;
   private alEditarColumna?: (index: number, nuevoNombre: string) => void;
+  private alCambiarFuente?: () => void;
 
   constructor(config: GrillaConfig) {
     this.titulo = config.titulo;
@@ -32,11 +43,13 @@ export class GrillaLogica {
     this.alEliminarFila = config.alEliminarFila;
     this.alEliminarColumna = config.alEliminarColumna;
     this.alEditarColumna = config.alEditarColumna;
+    this.alCambiarFuente = config.alCambiarFuente;
 
     // La grilla fabrica su propio objeto Botón usando la clase BotonLogica
     this.botonAccion = new BotonLogica({
       texto: config.textoBoton,
       color: config.colorBoton,
+      colorTexto: config.colorTextoBoton,
       alHacerClick: config.alPresionarBoton
     });
 
@@ -44,8 +57,42 @@ export class GrillaLogica {
       this.botonSecundario = new BotonLogica({
         texto: config.textoBotonSecundario,
         color: config.colorBotonSecundario,
+        colorTexto: config.colorTextoBotonSecundario,
         alHacerClick: config.alPresionarBotonSecundario
       });
+    }
+
+    if (config.textoBotonFuente) {
+      this.botonFuente = new BotonLogica({
+        texto: config.textoBotonFuente,
+        color: config.colorBotonFuente || "#4a5568",
+        colorTexto: config.colorTextoBotonFuente || "#ffffff",
+        alHacerClick: () => this.siguienteFuente()
+      });
+    }
+  }
+
+  // MÉTODO NUEVO: Cicla a la siguiente fuente de Google Fonts
+  public siguienteFuente(): void {
+    this.indiceFuenteActual = (this.indiceFuenteActual + 1) % this.fuentesDisponibles.length;
+    const fontName = this.fuentesDisponibles[this.indiceFuenteActual];
+    
+    if (fontName !== "Arial, sans-serif") {
+      const fontId = `google-font-${fontName.replace(/\s+/g, '-').toLowerCase()}`;
+      if (!document.getElementById(fontId)) {
+        const link = document.createElement('link');
+        link.id = fontId;
+        link.rel = 'stylesheet';
+        link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(/\s+/g, '+')}&display=swap`;
+        document.head.appendChild(link);
+      }
+      this.fuenteActual = `'${fontName}', sans-serif`;
+    } else {
+      this.fuenteActual = "Arial, sans-serif";
+    }
+
+    if (this.alCambiarFuente) {
+      this.alCambiarFuente();
     }
   }
 

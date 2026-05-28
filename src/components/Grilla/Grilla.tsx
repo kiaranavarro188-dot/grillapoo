@@ -59,7 +59,7 @@ const manejarEditarFila = (index: number) => {
 
   return (
     <div style={{ 
-      fontFamily: 'Arial, sans-serif', 
+      fontFamily: controlador.fuenteActual, 
       border: '1px solid #f5f5f5', 
       padding: '20px', 
       borderRadius: '8px',
@@ -182,6 +182,7 @@ const manejarEditarFila = (index: number) => {
       <div style={{ display: 'flex', gap: '10px' }}>
         <BotonComponente controlador={controlador.botonAccion} />
         {controlador.botonSecundario && <BotonComponente controlador={controlador.botonSecundario} />}
+        {controlador.botonFuente && <BotonComponente controlador={controlador.botonFuente} />}
       </div>
     </div>
   );

@@ -5,15 +5,15 @@ import { GrillaLogica } from './components/Grilla/Grilla';
 import { DropdownLogica } from './components/DropBox/DropBox';
 import { CheckboxLogica } from './components/CheckBox/CheckBox';
 import { MenuLogica } from './components/Menu/Menu';
-import { InputLogica } from './components/Input/Input'; 
+import { InputLogica } from './components/Input/Input';
 
 import { GrillaComponente } from './components/Grilla/Grilla.tsx';
 import { DropdownComponente } from './components/DropBox/DropBox.tsx';
 import { CheckboxComponente } from './components/CheckBox/CheckBox.tsx';
 import { MenuComponente } from './components/Menu/Menu.tsx';
-import { InputComponente } from './components/Input/Input.tsx'; 
+import { InputComponente } from './components/Input/Input.tsx';
 
-import './App.css'; 
+import './App.css';
 
 export default function App() {
   const [, setRefrescar] = useState(0);
@@ -25,15 +25,19 @@ export default function App() {
   const miMenu = useRef(new MenuLogica({
     itemsIniciales: [
       { id: "dashboard", texto: "Consolidación", accion: () => setRefrescar(p => p + 1) },
-      { id: "organismo", texto: "Organismos", subMenus: [
-          { id: "org-lista", texto: "Listado Oficial", accion: () => {} },
-          { id: "org-config", texto: "Configuración", accion: () => {} }
-      ]},
-      { id: "reportes", texto: "Reportes", subMenus: [
-          { id: "rep-lista", texto: "Lista", accion: () => {} },
-          { id: "rep-modelos", texto: "Modelos", accion: () => {} }
-      ]},
-      
+      {
+        id: "organismo", texto: "Organismos", subMenus: [
+          { id: "org-lista", texto: "Listado Oficial", accion: () => { } },
+          { id: "org-config", texto: "Configuración", accion: () => { } }
+        ]
+      },
+      {
+        id: "reportes", texto: "Reportes", subMenus: [
+          { id: "rep-lista", texto: "Lista", accion: () => { } },
+          { id: "rep-modelos", texto: "Modelos", accion: () => { } }
+        ]
+      },
+
       { id: "usuarios", texto: "Usuarios", },
     ],
     alCambiarRuta: () => setRefrescar(p => p + 1)
@@ -64,16 +68,31 @@ export default function App() {
     alCambiarEstado: () => setRefrescar(p => p + 1)
   }));
 
+  // Función auxiliar para obtener el siguiente ID de forma autoincremental
+  const obtenerSiguienteId = (controlador: GrillaLogica) => {
+    const filas = controlador.obtenerDatos();
+    const idColIndex = controlador.columnas.indexOf("ID");
+    if (idColIndex === -1) return "102";
+    const ids = filas.map(f => parseInt(f[idColIndex], 10)).filter(id => !isNaN(id));
+    return String(ids.length > 0 ? Math.max(...ids) + 1 : 102);
+  };
+
   // --- GRILLA 1 ---
   const miGrilla = useRef(new GrillaLogica({
     titulo: "Listado de Registros",
     columnas: ["ID", "Fecha", "Organismo", "Estado"],
     textoBoton: "Nuevo Registro +",
-    colorBoton: "#2b4c7e",
+    colorBoton: "#00317a",
+    colorTextoBoton: "#ffffff",
     textoBotonSecundario: "+ Agregar Columna",
-    colorBotonSecundario: "#530744",
+    colorBotonSecundario: "#1c7c20",
+    colorTextoBotonSecundario: "#ffffff",
+    textoBotonFuente: "Cambiar Fuente",
+    colorBotonFuente: "#8f8e8e",
+    colorTextoBotonFuente: "#ffff",
     alPresionarBoton: () => {
-      miGrilla.current.agregarFila(["102", "26/05/2026", "Organismo Nuevo", "Pendiente"]);
+      const siguienteId = obtenerSiguienteId(miGrilla.current);
+      miGrilla.current.agregarFila([siguienteId, "26/05/2026", "Organismo Nuevo", "Pendiente"]);
       setRefrescar(p => p + 1);
     },
     alPresionarBotonSecundario: () => {
@@ -83,7 +102,8 @@ export default function App() {
     },
     alEliminarFila: () => setRefrescar(p => p + 1),
     alEliminarColumna: () => setRefrescar(p => p + 1),
-    alEditarColumna: () => setRefrescar(p => p + 1)
+    alEditarColumna: () => setRefrescar(p => p + 1),
+    alCambiarFuente: () => setRefrescar(p => p + 1)
   }));
 
   // --- GRILLA 2 ---
@@ -91,11 +111,17 @@ export default function App() {
     titulo: "Listado de Registros nueva",
     columnas: ["ID", "Fecha", "Organismo", "Estado"],
     textoBoton: "Nuevo Registro +",
-    colorBoton: "#2b4c7e",
+    colorBoton: "#00317a",
+    colorTextoBoton: "#ffffff",
     textoBotonSecundario: "+ Agregar Columna",
-    colorBotonSecundario: "#530744",
+    colorBotonSecundario: "#1c7c20",
+    colorTextoBotonSecundario: "#ffffff",
+    textoBotonFuente: "Cambiar Fuente",
+    colorBotonFuente: "#8f8e8eff",
+    colorTextoBotonFuente: "#ffff",
     alPresionarBoton: () => {
-      miGrillaNueva.current.agregarFila(["102", "26/05/2026", "Organismo Nuevo", "Pendiente"]);
+      const siguienteId = obtenerSiguienteId(miGrillaNueva.current);
+      miGrillaNueva.current.agregarFila([siguienteId, "26/05/2026", "Organismo Nuevo", "Pendiente"]);
       setRefrescar(p => p + 1);
     },
     alPresionarBotonSecundario: () => {
@@ -105,7 +131,8 @@ export default function App() {
     },
     alEliminarFila: () => setRefrescar(p => p + 1),
     alEliminarColumna: () => setRefrescar(p => p + 1),
-    alEditarColumna: () => setRefrescar(p => p + 1)
+    alEditarColumna: () => setRefrescar(p => p + 1),
+    alCambiarFuente: () => setRefrescar(p => p + 1)
   }));
 
   // 👈 TODO DESDE APP: Al tocar Buscar, simplemente guardamos el texto plano en el estado
@@ -118,38 +145,38 @@ export default function App() {
   const obtenerFilasFiltradas = (controladorGrilla: GrillaLogica) => {
     const todasLasFilas = controladorGrilla.obtenerDatos();
     if (!textoFiltro) return todasLasFilas;
-    return todasLasFilas.filter((fila: string[]) => 
+    return todasLasFilas.filter((fila: string[]) =>
       fila.some(celda => String(celda).toLowerCase().includes(textoFiltro))
     );
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      height: '100vh', 
+    <div style={{
+      display: 'flex',
+      height: '100vh',
       width: '100%',          // Al usar 100% evitamos desbordes con las barras de scroll nativas
-      backgroundColor: '#f0f2f5', 
+      backgroundColor: '#f0f2f5',
       fontFamily: '"Inter", "Segoe UI", sans-serif',
       overflow: 'hidden',     // Bloqueo total de scrolls globales raros
       margin: 0,
       padding: 0,
       boxSizing: 'border-box'
     }}>
-      
+
       {/* --- BARRA LATERAL (MENU) --- */}
       {/* Ya no necesita trucos raros, recibe el menú que se banca su propio espacio */}
       <MenuComponente controlador={miMenu.current} />
 
       {/* --- CONTENIDO PRINCIPAL --- */}
-      <div style={{ 
-        flexGrow: 1, 
-        display: 'flex', 
-        flexDirection: 'column', 
+      <div style={{
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
         height: '100vh',
         overflow: 'hidden',   // El contenedor intermedio se queda quieto
         boxSizing: 'border-box'
       }}>
-        
+
         {/* CABECERA (HEADER) */}
         <header style={{
           height: '60px',
@@ -166,23 +193,23 @@ export default function App() {
             CONSOLIDACIÓN POR ORGANISMO
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-             <span style={{ fontSize: '13px', color: '#666' }}>Admin Usuario</span>
-             <div style={{ width: '35px', height: '35px', borderRadius: '50%', backgroundColor: '#2b4c7e', color: '#fff', display: 'grid', placeItems: 'center' }}>A</div>
+            <span style={{ fontSize: '13px', color: '#666' }}>Admin Usuario</span>
+            <div style={{ width: '35px', height: '35px', borderRadius: '50%', backgroundColor: '#2b4c7e', color: '#fff', display: 'grid', placeItems: 'center' }}>A</div>
           </div>
         </header>
 
         {/* CUERPO DEL DASHBOARD (El espacio gris de fondo) */}
-        <main style={{ 
+        <main style={{
           padding: '24px 24px 24px 12px', // Margen izquierdo chico para que quede pegado al menú oscuro
-          display: 'flex', 
-          flexDirection: 'column', 
+          display: 'flex',
+          flexDirection: 'column',
           gap: '20px',
           flexGrow: 1,
           overflowY: 'auto',              // Si el contenido es largo, el scroll vertical aparece SOLO acá adentro
           boxSizing: 'border-box',
           width: '100%'
         }}>
-          
+
           {/* TARJETA DE FILTROS */}
           <section style={{
             backgroundColor: '#fff',
@@ -196,7 +223,7 @@ export default function App() {
             <div style={{ marginBottom: '15px', color: '#2b4c7e', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span>🔍 Filtros de Búsqueda</span>
             </div>
-            
+
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: '20px', flexWrap: 'wrap' }}>
               <div style={{ width: '300px' }}>
                 <label style={{ fontSize: '12px', color: '#666', marginBottom: '5px', display: 'block' }}>Seleccionar Organismo</label>
@@ -214,8 +241,8 @@ export default function App() {
                 <CheckboxComponente controlador={checkSoloActivos.current} />
               </div>
 
-              <button 
-                onClick={manejarBusqueda} 
+              <button
+                onClick={manejarBusqueda}
                 style={{
                   backgroundColor: '#2b4c7e',
                   color: '#fff',
@@ -260,16 +287,16 @@ export default function App() {
               De esta manera, la grilla cree que recibe su controlador POO puro, pero cuando llama a `.obtenerDatos()`,
               le devolvemos la lista filtrada que calculamos acá arriba en App.tsx. ¡Y las columnas no se mueven jamás!
             */}
-            <GrillaComponente 
+            <GrillaComponente
               controlador={Object.create(miGrilla.current, {
                 obtenerDatos: { value: () => obtenerFilasFiltradas(miGrilla.current) }
-              })} 
+              })}
             />
 
-            <GrillaComponente 
+            <GrillaComponente
               controlador={Object.create(miGrillaNueva.current, {
                 obtenerDatos: { value: () => obtenerFilasFiltradas(miGrillaNueva.current) }
-              })} 
+              })}
             />
           </section>
 

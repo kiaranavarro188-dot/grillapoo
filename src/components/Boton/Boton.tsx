@@ -10,7 +10,7 @@ export function BotonComponente({ controlador }: BotonProps) {
       disabled={controlador.deshabilitado}
       style={{
         backgroundColor: controlador.color,
-        color: 'white',
+        color: controlador.colorTexto,
         padding: '10px 20px',
         border: 'none',
         borderRadius: '4px',
